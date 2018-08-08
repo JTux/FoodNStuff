@@ -15,9 +15,32 @@ namespace FoodNStuff.WebMVC.Controllers
         private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: Customer
-        public ActionResult Index()
+        public ActionResult Index(string sortOrder)
         {
-            return View(db.Customers.ToList());
+            ViewBag.SortFirstName = String.IsNullOrEmpty(sortOrder) ? "FirstName" : "";
+            ViewBag.SortLastName = String.IsNullOrEmpty(sortOrder) ? "LastName" : "";
+
+
+            var customers = from c in db.Customers
+                            select c;
+            switch (sortOrder)
+            {
+                case "FirstName":
+                    customers = customers.OrderBy(c => c.FirstName);
+                    break;
+                case "First_Desc":
+                    customers = customers.OrderByDescending(c => c.FirstName);
+                    break;
+                case "LastName":
+                    customers = customers.OrderBy(c => c.LastName);
+                    break;
+                case "Last_Desc":
+                    customers = customers.OrderByDescending(c => c.LastName);
+                    break;
+            }
+            return View(customers.ToList());
+
+            //return View(db.Customers.ToList());
         }
 
         // GET: Customer/Details/5
